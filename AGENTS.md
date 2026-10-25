@@ -1090,3 +1090,24 @@ Function and method comment blocks may include more detail as required to make
 calling contracts clear and document parameter usage, but should still be kept concise.
 
 Avoid redundancy and repetition; comments should never simply restate what the code already says.
+
+---
+
+## Workspace-specific notes (personal fork)
+
+*The workspace rules in this section (commit policy, never push to upstream,
+branch naming) are **deliberately duplicated** from the workspace-root
+`AGENTS.md`: an agent started inside this repo may not have the root file loaded
+(project root = nearest `.git`). Do not remove the duplication.*
+
+This checkout is a personal fork: `origin` = `bombo82/esphome`, `upstream` = `esphome/esphome`; local `dev` tracks `origin/dev` (not upstream). The section above is upstream's guide; this section records the workspace workflow.
+
+- Do not commit or push unless explicitly asked. Never push to `upstream`.
+- `git fetch upstream` fetches **only `dev`** (narrowed refspec) — do not widen it.
+- Rebase often, silently, in both cases: (1) after every `git fetch upstream`, if local `dev` is behind `upstream/dev`, fast-forward or rebase it; (2) at the start of work on a feature branch, rebase the branch onto latest `dev`. New work goes on a fresh branch from latest `dev`.
+- On any rebase conflict: `git rebase --abort` immediately and report the conflict to the user. Never resolve rebase conflicts automatically unless the user explicitly says so.
+- A rebase may leave local `dev` ahead of `origin/dev` — if a push to `origin` is needed, mention it to the user; never push without being asked.
+- The local `venv/` belongs to this repo only — never use it from other projects in the workspace (`../configurazioni/` has no Python environment). Do NOT activate it with `source venv/bin/activate` (stale paths); prepend it to PATH. Run tooling via `python3 script/run-in-env.py <cmd>` — never with system Python (missing deps, e.g. `colorama`).
+- Committing: the git pre-commit hook needs `pre-commit` on PATH — `PATH="$PWD/venv/bin:$PATH" git commit ...`.
+- After a big upstream sync, re-verify the venv (new deps): `venv/bin/pip install <pkg>` or re-sync from `requirements_dev.txt`.
+- When a change spans `../MTR-1/`, use the **same branch name in both repos** (e.g. `corner-mount-5-zones`).
